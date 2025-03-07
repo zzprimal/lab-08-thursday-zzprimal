@@ -46,7 +46,7 @@ public class MainActivityTest {
     @BeforeClass
     public static void setup(){
         // Specific address for emulated device to access our localHost
-        String androidLocalhost = "10.0.2.2";
+        String androidLocalhost = "127.0.0.1";
         int portNumber = 8080;
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
 
@@ -128,7 +128,7 @@ public class MainActivityTest {
 
     @After
     public void tearDown() {
-        String projectId = "YOUR-PROJECT-ID";
+        String projectId = "lab-08-thursday";
         URL url = null;
         try {
             url = new URL("http://10.0.2.2:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
