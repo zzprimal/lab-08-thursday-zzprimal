@@ -38,6 +38,10 @@ public class MovieProvider {
         });
     }
 
+    public static void setInstanceForTesting(FirebaseFirestore firestore) {
+        movieProvider = new MovieProvider(firestore);
+    }
+
     public static MovieProvider getInstance(FirebaseFirestore firestore) {
         if (movieProvider == null)
             movieProvider = new MovieProvider(firestore);
