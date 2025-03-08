@@ -61,7 +61,7 @@ public class MainActivityTest {
         };
 
         for (Movie movie : movies) {
-            DocumentReference docRef = moviesRef.document();
+            DocumentReference docRef = moviesRef.document(movie.getTitle());
             movie.setId(docRef.getId());
             docRef.set(movie);
         }
@@ -156,9 +156,10 @@ public class MainActivityTest {
     @After
     public void tearDown() {
         String projectId = "lab08-d38c0";
+
         URL url = null;
         try {
-            url = new URL("http://10.0.2.2:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
+            url = new URL("http://127.0.0.1:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
         } catch (MalformedURLException exception) {
             Log.e("URL Error", Objects.requireNonNull(exception.getMessage()));
         }
