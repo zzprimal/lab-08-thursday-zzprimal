@@ -1,15 +1,24 @@
 package com.example.androidcicd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.example.androidcicd.movie.Movie;
 import com.example.androidcicd.movie.MovieProvider;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +34,9 @@ public class MovieProviderTest {
 
     @Mock
     private DocumentReference mockDocRef;
+
+    @Mock
+    private DocumentReference mockDocRef2;
 
     private MovieProvider movieProvider;
 
@@ -92,5 +104,20 @@ public class MovieProviderTest {
 
         // Call update movie, which should throw an error due to having an empty name
         movieProvider.updateMovie(movie, "", "Another Genre", 2026);
+    }
+
+    @Test
+    public void testAddDuplicateTitles() {
+        // Create movie and set our id
+        Movie movie1 = new Movie("Batman", "Action", 2022);
+        when(mockDocRef.getId()).thenReturn("123");
+        movieProvider.addMovie(movie1);
+
+        Movie movie2 = new Movie("Batman", "Action", 1966);
+        when(mockDocRef.getId()).thenReturn("124");
+        movieProvider.addMovie(movie2);
+        for (Movie movie: movieProvider.getMovies()){
+            assertNotEquals("Duplicate movie was added", "124", movie.getId());
+        }
     }
 }

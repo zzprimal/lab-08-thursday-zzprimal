@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertNotEquals;
+
 import android.util.Log;
 
 import androidx.test.espresso.ViewInteraction;
@@ -34,6 +36,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RunWith(AndroidJUnit4.class)
@@ -49,11 +53,6 @@ public class MainActivityTest {
         String androidLocalhost = "127.0.0.1";
         int portNumber = 8080;
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
-
-    }
-
-    @Before
-    public void seedDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference moviesRef = db.collection("movies");
         Movie[] movies = {
@@ -66,6 +65,7 @@ public class MainActivityTest {
             movie.setId(docRef.getId());
             docRef.set(movie);
         }
+
     }
 
     @Test
@@ -125,10 +125,38 @@ public class MainActivityTest {
 
         view.check(doesNotExist());
     }
+    @Test
+    public void appAddDuplicateMovie() throws InterruptedException {
+        Movie movie1 = new Movie("Batman", "Action", 2022);
+        Movie movie2 = new Movie("Batman", "Action", 1966);
+        onView(withId(R.id.buttonAddMovie)).perform(click());
 
+        // Input Movie Details
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Batman"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Action"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("2022"));
+
+        // Submit Form
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // Check that our movie list has our new movie
+        onView(withText("Batman")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.buttonAddMovie)).perform(click());
+
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Batman"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Action"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("1966"));
+
+        onView(withId(android.R.id.button1)).perform(click());
+
+        onView(withId(R.id.edit_title)).check(matches(hasErrorText("Movie title already exists!")));
+
+    }
     @After
     public void tearDown() {
-        String projectId = "lab8-9b463";
+        String projectId = "lab08-d38c0";
+
         URL url = null;
         try {
             url = new URL("http://127.0.0.1:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
