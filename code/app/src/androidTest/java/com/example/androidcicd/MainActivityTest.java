@@ -155,7 +155,7 @@ public class MainActivityTest {
     }
     @After
     public void tearDown() {
-        String projectId = "lab8-9b463";
+        String projectId = "lab08-d38c0";
         URL url = null;
         try {
             url = new URL("http://10.0.2.2:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
