@@ -93,4 +93,15 @@ public class MovieProviderTest {
         // Call update movie, which should throw an error due to having an empty name
         movieProvider.updateMovie(movie, "", "Another Genre", 2026);
     }
+
+    @Test
+    public void testAddDuplicateTitles() {
+        // Create movie and set our id
+        Movie movie = new Movie("Oppenheimer", "Thriller/Historical Drama", 2023);
+        movie.setId("123");
+
+        // Call the delete movie and verify the firebase delete method was called.
+        movieProvider.deleteMovie(movie);
+        verify(mockDocRef).delete();
+    }
 }

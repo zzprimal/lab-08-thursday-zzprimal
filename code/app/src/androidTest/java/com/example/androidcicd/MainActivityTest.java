@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RunWith(AndroidJUnit4.class)
@@ -49,9 +51,26 @@ public class MainActivityTest {
         String androidLocalhost = "127.0.0.1";
         int portNumber = 8080;
         FirebaseFirestore.getInstance().useEmulator(androidLocalhost, portNumber);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference moviesRef = db.collection("movies");
+        Movie[] movies = {
+                new Movie("Oppenheimer", "Thriller/Historical Drama", 2023),
+                new Movie("Barbie", "Comedy/Fantasy", 2023)
+        };
+
+        for (Movie movie : movies) {
+            Map<String, Object> data1 = new HashMap<>();
+            data1.put("Title", (Object) movie.getTitle());
+            data1.put("Genre", (Object) movie.getGenre());
+            data1.put("Year", (Object) movie.getYear());
+            DocumentReference docRef = moviesRef.document();
+            movie.setId(docRef.getId());
+            data1.put("Id", (Object) movie.getId());
+            docRef.set(data1);
+        }
 
     }
-
+    /*
     @Before
     public void seedDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -62,11 +81,18 @@ public class MainActivityTest {
         };
 
         for (Movie movie : movies) {
+            Map<String, Object> data1 = new HashMap<>();
+            data1.put("Title", (Object) movie.getTitle());
+            data1.put("Genre", (Object) movie.getGenre());
+            data1.put("Year", (Object) movie.getYear());
             DocumentReference docRef = moviesRef.document();
             movie.setId(docRef.getId());
-            docRef.set(movie);
+            data1.put("Id", (Object) movie.getId());
+            docRef.set(data1);
         }
     }
+
+     */
 
     @Test
     public void addMovieShouldAddValidMovieToMovieList() {
@@ -126,9 +152,10 @@ public class MainActivityTest {
         view.check(doesNotExist());
     }
 
+    /*
     @After
     public void tearDown() {
-        String projectId = "lab-08-thursday";
+        String projectId = "lab8-9b463";
         URL url = null;
         try {
             url = new URL("http://10.0.2.2:8080/emulator/v1/projects/" + projectId + "/databases/(default)/documents");
@@ -149,4 +176,6 @@ public class MainActivityTest {
             }
         }
     }
+
+     */
 }

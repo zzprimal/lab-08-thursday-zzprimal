@@ -26,6 +26,8 @@ public class MovieDialogFragment extends DialogFragment {
     private EditText editMovieYear;
     private MovieProvider movieProvider;
 
+    public static AlertDialog dialog;
+
     public static MovieDialogFragment newInstance(Movie movie){
         Bundle args = new Bundle();
         args.putSerializable("Movie", movie);
@@ -88,7 +90,7 @@ public class MovieDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         // Create the dialog fragment
-        AlertDialog dialog = builder
+        dialog = builder
                 .setView(view)
                 .setTitle("Movie Details")
                 .setNegativeButton("Cancel", null)
@@ -110,7 +112,7 @@ public class MovieDialogFragment extends DialogFragment {
                 } else {
                     movieProvider.addMovie(new Movie(title, genre, year));
                 }
-                dialog.dismiss();
+                //dialog.dismiss();
             });
         });
         return dialog;
