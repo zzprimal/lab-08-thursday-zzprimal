@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertNotEquals;
+
 import android.util.Log;
 
 import androidx.test.espresso.ViewInteraction;
@@ -59,40 +61,12 @@ public class MainActivityTest {
         };
 
         for (Movie movie : movies) {
-            Map<String, Object> data1 = new HashMap<>();
-            data1.put("Title", (Object) movie.getTitle());
-            data1.put("Genre", (Object) movie.getGenre());
-            data1.put("Year", (Object) movie.getYear());
             DocumentReference docRef = moviesRef.document();
             movie.setId(docRef.getId());
-            data1.put("Id", (Object) movie.getId());
-            docRef.set(data1);
+            docRef.set(movie);
         }
 
     }
-    /*
-    @Before
-    public void seedDatabase() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference moviesRef = db.collection("movies");
-        Movie[] movies = {
-                new Movie("Oppenheimer", "Thriller/Historical Drama", 2023),
-                new Movie("Barbie", "Comedy/Fantasy", 2023)
-        };
-
-        for (Movie movie : movies) {
-            Map<String, Object> data1 = new HashMap<>();
-            data1.put("Title", (Object) movie.getTitle());
-            data1.put("Genre", (Object) movie.getGenre());
-            data1.put("Year", (Object) movie.getYear());
-            DocumentReference docRef = moviesRef.document();
-            movie.setId(docRef.getId());
-            data1.put("Id", (Object) movie.getId());
-            docRef.set(data1);
-        }
-    }
-
-     */
 
     @Test
     public void addMovieShouldAddValidMovieToMovieList() {
@@ -151,8 +125,34 @@ public class MainActivityTest {
 
         view.check(doesNotExist());
     }
+    @Test
+    public void appAddDuplicateMovie() throws InterruptedException {
+        Movie movie1 = new Movie("Batman", "Action", 2022);
+        Movie movie2 = new Movie("Batman", "Action", 1966);
+        onView(withId(R.id.buttonAddMovie)).perform(click());
 
-    /*
+        // Input Movie Details
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Batman"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Action"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("2022"));
+
+        // Submit Form
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // Check that our movie list has our new movie
+        onView(withText("Batman")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.buttonAddMovie)).perform(click());
+
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Batman"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Action"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("1966"));
+
+        onView(withId(android.R.id.button1)).perform(click());
+
+        onView(withId(R.id.edit_title)).check(matches(hasErrorText("Movie title already exists!")));
+
+    }
     @After
     public void tearDown() {
         String projectId = "lab8-9b463";
@@ -176,6 +176,4 @@ public class MainActivityTest {
             }
         }
     }
-
-     */
 }

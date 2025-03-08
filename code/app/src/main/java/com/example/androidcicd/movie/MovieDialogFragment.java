@@ -26,8 +26,6 @@ public class MovieDialogFragment extends DialogFragment {
     private EditText editMovieYear;
     private MovieProvider movieProvider;
 
-    public static AlertDialog dialog;
-
     public static MovieDialogFragment newInstance(Movie movie){
         Bundle args = new Bundle();
         args.putSerializable("Movie", movie);
@@ -90,7 +88,7 @@ public class MovieDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         // Create the dialog fragment
-        dialog = builder
+        AlertDialog dialog = builder
                 .setView(view)
                 .setTitle("Movie Details")
                 .setNegativeButton("Cancel", null)
@@ -107,12 +105,18 @@ public class MovieDialogFragment extends DialogFragment {
                 String title = editMovieName.getText().toString().trim();
                 String genre = editMovieGenre.getText().toString().trim();
                 int year = Integer.parseInt(editMovieYear.getText().toString().trim());
+                boolean rval;
                 if (tag != null && tag.equals( "Movie Details")) {
-                    movieProvider.updateMovie(movie, title, genre, year);
+                    rval = movieProvider.updateMovie(movie, title, genre, year);
                 } else {
-                    movieProvider.addMovie(new Movie(title, genre, year));
+                    rval = movieProvider.addMovie(new Movie(title, genre, year));
                 }
-                //dialog.dismiss();
+                if (!rval){
+                    editMovieName.setError("Movie title already exists!");
+                }
+                else{
+                    dialog.dismiss();
+                }
             });
         });
         return dialog;
@@ -122,6 +126,7 @@ public class MovieDialogFragment extends DialogFragment {
         Editable title = editMovieName.getText();
         Editable genre = editMovieGenre.getText();
         Editable year = editMovieYear.getText();
+        String titlestr = editMovieName.getText().toString().trim();
         if (isEmpty(title)) {
             editMovieName.setError("Movie name cannot be empty!");
             return false;

@@ -1,15 +1,24 @@
 package com.example.androidcicd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.example.androidcicd.movie.Movie;
 import com.example.androidcicd.movie.MovieProvider;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +34,9 @@ public class MovieProviderTest {
 
     @Mock
     private DocumentReference mockDocRef;
+
+    @Mock
+    private DocumentReference mockDocRef2;
 
     private MovieProvider movieProvider;
 
@@ -97,11 +109,15 @@ public class MovieProviderTest {
     @Test
     public void testAddDuplicateTitles() {
         // Create movie and set our id
-        Movie movie = new Movie("Oppenheimer", "Thriller/Historical Drama", 2023);
-        movie.setId("123");
+        Movie movie1 = new Movie("Batman", "Action", 2022);
+        when(mockDocRef.getId()).thenReturn("123");
+        movieProvider.addMovie(movie1);
 
-        // Call the delete movie and verify the firebase delete method was called.
-        movieProvider.deleteMovie(movie);
-        verify(mockDocRef).delete();
+        Movie movie2 = new Movie("Batman", "Action", 1966);
+        when(mockDocRef.getId()).thenReturn("124");
+        movieProvider.addMovie(movie2);
+        for (Movie movie: movieProvider.getMovies()){
+            assertNotEquals("Duplicate movie was added", "124", movie.getId());
+        }
     }
 }
